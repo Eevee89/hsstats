@@ -1,25 +1,5 @@
 <?php
 
-$url = "https://api.github.com/repos/Eevee89/hs_datas/datas.json";
-$accessToken = getenv('GITHUB_ACCESS_TOKEN'); // Assuming stored in environment variable
-
-$curl = curl_init($url);
-curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($curl, CURLOPT_HTTPHEADER, [
-    "Authorization: Bearer $accessToken"
-]);
-
-$response = curl_exec($curl);
-$data = json_decode($response, true);
-
-curl_close($curl);
-
-if (isset($data['error'])) {
-    echo "Erreur de parsing";
-} else {
-    var_dump($data);
-}
-
 $dataPoints = array();
 $y = 40;
 for($i = 0; $i < 1000; $i++){
