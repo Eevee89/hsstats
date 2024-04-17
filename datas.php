@@ -1,14 +1,45 @@
 <?php
 
-// Assuming your JSON data has multiple objects like {"date": "...", "cote": "..."}
-$data = json_decode(file_get_contents("datas.json"), true);
+$token = "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"; // Replace with your actual GitHub access token
 
-// Error handling (optional, but recommended)
+$headers = array(
+  "Authorization: Bearer " . $token,
+  "User-Agent: test.php (Simple script to access GitHub API) PHP7; Linux x64",
+  "Accept: application/vnd.github.v3.raw"
+);
+
+$url = "https://api.github.com/repos/Eevee89/hs_datas/contents/datas.json?ref=main";
+
+$ch = curl_init($url);
+curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+$response = curl_exec($ch);
+$response = trim($response);
+$response = utf8_decode($response);
+
+if (curl_errno($ch)) {
+  echo 'Error:' . curl_error($ch);
+  echo "\n";
+  exit(1);
+}
+$data = json_decode($response, true);
+if ($data === NULL) {
+  echo json_last_error_msg();
+  echo "\n";
+  exit(1);
+}
+
+curl_close($ch);
+
+//$data = json_decode(file_get_contents("datas.json"), true);
+
 if (!$data) {
   echo "Error: Could not parse JSON data.";
   exit;
 }
 
+// Traite les données lues
 function treatDatas($data) {
   $heros_name = explode("\n", file_get_contents("heros.txt"));
   $heros = [];
@@ -16,11 +47,11 @@ function treatDatas($data) {
     $heros[$name] = 0;
   }
 
-  $dataPoints = [];
-  $index = 0; // To keep track of x-axis index
-  $mean = 0;
-  $min = 10000;
-  $max = 0;
+  $dataPoints = []; // Points pour le graphique
+  $index = 0;
+  $mean = 0; // Côte moyenne
+  $min = 10000; // Côte max
+  $max = 0; // Côte min
 
   $types = [
     "Dragon"=> 0, 
@@ -33,11 +64,21 @@ function treatDatas($data) {
     "Bête" => 0, 
     "Pirate" => 0, 
     "Méca" => 0,
-  ];
+  ]; // Occurence des différents types
+
+  $ranks = [ 
+    1 => 0, 
+    2 => 0, 
+    3 => 0, 
+    4 => 0, 
+    5 => 0, 
+    6 => 0, 
+    7 => 0, 
+    8 => 0
+  ]; // Occurence des 8 rangs
 
   foreach($data as $dataObject) {
-    // Assuming "cote" is the key for the value you want on the y-axis
-    $yValue = $dataObject["cote"];  // Convert cote to thousands
+    $yValue = $dataObject["cote"];
     array_push($dataPoints, array("x" => $index++, "y" => $yValue));
     $mean += $yValue;
     if ($yValue > $max) {
@@ -48,6 +89,7 @@ function treatDatas($data) {
     }
     $types[$dataObject["type"]] += 1;
     $heros[$dataObject["hero"]] += 1;
+    $ranks[$dataObject["rank"]] += 1;
   }
 
   $mean = (int)($mean/count($data));
@@ -58,6 +100,7 @@ function treatDatas($data) {
     "maximum" => $max,
     "types" => $types,
     "heros" => $heros,
+    "ranks" => $ranks,
   ];
   return $treated;
 }
@@ -71,6 +114,7 @@ function writeDatas($newData, $data) {
   return $data;
 }
 
+// Récupère les noms des 5 héros les plus joués
 function bestHeros($heros) {
   arsort($heros);
   $keys = array_keys($heros);

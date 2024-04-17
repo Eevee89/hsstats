@@ -5,6 +5,7 @@ function isMobile() {
 
 $mobile = isMobile();
 
+// Crée les divs des 10 types et des 5 meilleurs héros
 function myDiv($type, $value) {
   $myStr = $type . " : " . $value;
   return <<<HTML
@@ -14,16 +15,7 @@ function myDiv($type, $value) {
 HTML;
 }
 
-
-function redirectToNewPage() {
-  header("Location: form.php");
-  exit();
-}
-
-if (isset($_POST['redirect'])) {
-  redirectToNewPage();
-}
-
+// Crée le sélecteur des types
 function selectTypes($datas) {
   $class = $mobile ? "selectMobile" : "selectDesktop";
   $output = "<select name='type' class='$class' >";
@@ -34,6 +26,7 @@ function selectTypes($datas) {
   return $output;
 }
 
+// Crée le sélecteur des héros
 function selectHeros($heros) {
   $class = $mobile ? "selectMobile" : "selectDesktop";
   $output = "<select name='hero' class='$class' >";
@@ -47,6 +40,7 @@ function selectHeros($heros) {
 
 require_once "datas.php";
 
+// Récupère les input du form et les ajoute au fichier datas.json
 function fetchDatas($data) {
   $newData = [
     "date" => time(),
@@ -69,8 +63,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['submit']) and $_POST[
 <!DOCTYPE HTML>
 <html>
 <head>
-  <!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css" 
-      integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">-->
   <style>
     .alert {
         position: relative;
@@ -130,25 +122,22 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['submit']) and $_POST[
     
     form { 
       margin: 0 auto; 
-      width:250px;
+      width: 250px;
     }
 
     p {
-      font-size: 2rem;
+      font-size: <?php echo $mobile ? 2 : 1?>rem;
     }
 
     .mySlides {display: none;}
     img {vertical-align: middle;}
 
-    /* Slideshow container */
     .slideshow-container {
       max-width: 1000px;
       position: relative;
       margin: auto;
     }
 
-
-    /* Fading animation */
     .fade {
       animation-name: fade;
       animation-duration: 1.5s;
@@ -159,7 +148,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['submit']) and $_POST[
       to {opacity: 1}
     }
 
-    /* On smaller screens, decrease text size */
     @media only screen and (max-width: 300px) {
       .text {font-size: 11px}
     }
@@ -174,7 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['submit']) and $_POST[
   window.onload = function () {
 
   var chart = new CanvasJS.Chart("chartContainer", {
-    theme: "light2", // "light1", "light2", "dark1", "dark2"
+    theme: "light2",
     animationEnabled: true,
     zoomEnabled: true,
     title: {
@@ -190,7 +178,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['submit']) and $_POST[
     }]
   });
   chart.render();
-
   }
   </script>
   <?php if ($mobile) : ?>
@@ -319,7 +306,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['submit']) and $_POST[
       console.log(slideIndex);
       if (slideIndex > slides.length) {slideIndex = 1}    
       slides[slideIndex-1].style.display = "block";  
-      setTimeout(showSlides, 3000); // Change image every 2 seconds
+      setTimeout(showSlides, 3000);
     }
   </script>
 

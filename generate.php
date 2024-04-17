@@ -10,11 +10,12 @@ for ($i = 0; $i < 50; $i++) {
     "cote" => rand(3000, 7000),
     "type" => $type[rand(0, 9)],
     "hero" => $heros[rand(0, 96)],
+    "rank" => rand(1, 8),
     "img" => "",
   ];
 }
 
-$jsonData = json_encode($data, JSON_PRETTY_PRINT); // Add formatting for readability
+$jsonData = json_encode($data, JSON_PRETTY_PRINT);
 
 file_put_contents("datas.json", $jsonData);
 
